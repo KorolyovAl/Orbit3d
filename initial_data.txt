@@ -1,0 +1,16 @@
+Parameters of orbit:
+inclination		0
+orbit eccentricity	0
+apoapsis		35700
+periapsis		35700
+argument of periapsis	90
+true anomaly		-90
+ascending long		0
+orbital major axis	0
+orbital minor axis	0
+
+Parameters of satellite:
+mass			1
+area			1
+size			0.1
+Cx			3.54
