@@ -2,6 +2,7 @@
 #include "structures.h"
 #include "constants.h"
 #include "myvector_operators.h"
+#include "planets.h"
 
 My_vector Calculate_coordinates_periapsis(const double& latitude, const double& longitude, const double& hight, const double& e) {
 	double L = longitude * PI / 180;
@@ -18,6 +19,7 @@ My_vector Calculate_coordinates_periapsis(const double& latitude, const double& 
 std::vector<double> Calculate_elliptic_coordinates(const My_vector& coord) {
 	/*
 	Алгоритм взят отсюда: специальные методы прикладной геодезии, А. О. Куприянов, А. С. Корчагин, Д. А. Морозов. (на стр 6)
+	Algorithm: special methods of applied geodesy, A. O. Kupriyanov, A. S. Korchagin, D. A. Morozov. (page 6)
 	*/
 	double x = coord.GetX();
 	double y = coord.GetY();
@@ -70,6 +72,7 @@ My_vector Get_g(const My_vector& coord) {
 std::pair<My_vector, My_vector> Calculate_state_vector(struct elements_of_orbit& orb) {
 	/*
 	Алгоритм взят отсюда: В. И. Крылов, основы теории движения исз (часть первая: невозмущённое движение), (на стр 28)
+	Algorithm: V. I. Krylov, Fundamentals of the theory of motion of the artificial earth satellites (part one: undisturbed motion). (page 28)
 	*/
 	double per_arg = orb.periapsis_argument * PI / 180;
 	double T = orb.true_anomaly * PI / 180;
@@ -131,8 +134,13 @@ My_vector Get_thrust_a(const My_vector& coord, const My_vector& velocity, const 
 	return {};
 }
 
+	My_vector Get_planets_a(double current_date, std::vector<planet_data>& v, const My_vector& coord) {
+		
+		return {};
+	}
+
 std::pair<My_vector, My_vector> Function(const std::pair<My_vector, My_vector>& state, double dt, const satellite& sat, const atmosphere& atmo, 
-	const My_vector& atm_vel) {
+	const My_vector& atm_vel, const planets& planets_struct) {
 	My_vector coord = state.first;
 	My_vector velocity = state.second; // orbital velocity
 	My_vector atmo_velocity = velocity - atm_vel;
@@ -142,7 +150,17 @@ std::pair<My_vector, My_vector> Function(const std::pair<My_vector, My_vector>& 
 
 	if (sat.thrust_on == true) {
 		a = a + Get_thrust_a(coord, velocity, (sat.thrust / sat.mass), sat.thrust_way); // plus thrust acceleration
-		// плюс гравитация луны + солнце + давление солнца
+	}
+
+	if (planets_struct.general_mark == true) { // plus planets influence
+		My_vector local_a = { 0., 0., 0. };
+		if (planets_struct.Moon.first == true) {
+
+		}
+		if (planets_struct.Sun.first == true) {
+
+		}
+		a = a + local_a;
 	}
 
 	My_vector new_coord = velocity;
@@ -178,6 +196,8 @@ std::vector<double> Calculate_keplers_elements(const My_vector& coord_, const My
 	/*
 	 * Справочное руководство по небесной механике и астродинамике. Абалакин В. К., Аксенов Е. П., Гребеников Е. А., Демин В. Г., Рябов Ю. А.
 	 * Издание 2-е, дополненное и переработанное. (стр 283)
+	 * Algorithm: Reference Guide to Celestial Mechanics and Astrodynamics. Abalakin V. K., Aksenov E. P., Grebenikov E. A., Demin V. G., Ryabov Yu. A.
+	 * 2nd edition, expanded and revised. (page 283)
 	 */
 
 	My_vector vec_mod = coord_ / velocity_;

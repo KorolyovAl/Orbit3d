@@ -92,3 +92,11 @@ struct planets {
 	std::pair<bool, std::string> Moon;
 	std::pair<bool, std::string> Sun;
 };
+
+struct planet_data {
+	double date;
+	double X;
+	double Y;
+	double Z;
+	double R;
+};

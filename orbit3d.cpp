@@ -120,10 +120,10 @@ int main()
 
 		atm_vel = Calculate_vector_velocity_rotation(coordinates);
 
-		k1 = Function(U, 0., sat, atmo, atm_vel) * timestep;
-		k2 = Function(U + 0.5 * k1, timestep / 2., sat, atmo, atm_vel) * timestep;
-		k3 = Function(U + 0.5 * k2, timestep / 2., sat, atmo, atm_vel) * timestep;
-		k4 = Function(U + k3, timestep, sat, atmo, atm_vel) * timestep;
+		k1 = Function(U, 0., sat, atmo, atm_vel, planet_marks) * timestep;
+		k2 = Function(U + 0.5 * k1, timestep / 2., sat, atmo, atm_vel, planet_marks) * timestep;
+		k3 = Function(U + 0.5 * k2, timestep / 2., sat, atmo, atm_vel, planet_marks) * timestep;
+		k4 = Function(U + k3, timestep, sat, atmo, atm_vel, planet_marks) * timestep;
 
 		U = U + 1. / 6. * (k1 + 2 * k2 + 2 * k3 + k4);
 		coordinates = U.first;
