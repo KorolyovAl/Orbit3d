@@ -86,3 +86,9 @@ struct atmosphere {
 	double sv; // sound velosity [m/c]
 	double lambda; // mean free path [m]
 };
+
+struct planets {
+	bool general_mark;
+	std::pair<bool, std::string> Moon;
+	std::pair<bool, std::string> Sun;
+};

@@ -11,6 +11,7 @@
 #include "reader.h"
 #include "aerodynamic.h"
 #include "functions.h"
+#include "planets.h"
 
 using namespace std::chrono;
 
@@ -19,9 +20,24 @@ int main()
 	elements_of_orbit orb;
 	satellite sat;
 	atmosphere atmo;
+	planets planet_marks{
+		{true},							// general mark
+		{true, "Moon_geocenter.txt"},	// Moon
+		{true, "Sun_Earth.txt"}			// Sun
+	};
+	Planets_class objPlanets(planet_marks);
 	reader(orb, sat);
 	Aerodynamic_check_case();
 
+	if (planet_marks.general_mark == true) {
+		if (planet_marks.Moon.first == true) {
+			objPlanets.Fill_Moon(planet_marks.Moon.second);
+		}
+		if (planet_marks.Sun.first == true) {
+			objPlanets.Fill_Sun(planet_marks.Sun.second);
+		}
+	}
+	
 	sat.S = sat.d * sat.d * 3; // pi*d*d/4 for sphere, d*d for cubesat
 	sat.thrust_on = false;
 
