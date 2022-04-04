@@ -33,7 +33,7 @@ int main()
 		if (planet_marks.Moon.first == true) {
 			objPlanets.Fill_Moon(planet_marks.Moon.second);
 		}
-		if (planet_marks.Sun.first == true) {
+		if (planet_marks.Sun.first == false) {
 			objPlanets.Fill_Sun(planet_marks.Sun.second);
 		}
 	}
@@ -67,7 +67,7 @@ int main()
 	//ofstream output ("incl_65_1-1-1-0-400.txt");
 
 	__int64 day_count = 0; // count of days
-	int day = 1; // initial day of year
+	atmo.day = 90; // initial day of year
 	//int day_hour = 19, day_minute = 28, day_second = 34; // time of start PS-1, UTC
 	int day_hour = 1, day_minute = 0, day_second = 0;
 	int day_time = day_second + day_minute * 60 + day_hour * 3600; // time of current day in seconds
@@ -86,7 +86,7 @@ int main()
 
 	cout << "time: " << time << " hours: " << hours << " period: " << orb_period << endl;
 	cout << "L: " << Elipt[0] << " B: " << Elipt[1] << " H : " << Elipt[2] / 1000. << endl;
-	output << "day: " << day << "; F10.7: " << 200 << "; mass: " << sat.mass << "; d: " << sat.d << "; H: " << H
+	output << "day: " << atmo.day << "; F10.7: " << 200 << "; mass: " << sat.mass << "; d: " << sat.d << "; H: " << H
 		<< "; apoapsis: " << orb.apoapsis << "; periapsis: " << orb.periapsis << "; initial time (UTC): hour = " << day_hour << " minute = " << day_minute << endl;
 
 	while (H > 10.) {
@@ -96,7 +96,7 @@ int main()
 			B,   // latitude [deg]
 			L,  // longitude [deg]
 			90.,   // F10.7 solar activity index
-			day,    // day number sins 1,jan
+			atmo.day,    // day number sins 1,jan
 			day_time, // seconds in day (UT)
 			&atmo.d, // number density [1/m^3]
 			&atmo.ro,  // density [kg/m^3]
@@ -120,10 +120,10 @@ int main()
 
 		atm_vel = Calculate_vector_velocity_rotation(coordinates);
 
-		k1 = Function(U, 0., sat, atmo, atm_vel, planet_marks) * timestep;
-		k2 = Function(U + 0.5 * k1, timestep / 2., sat, atmo, atm_vel, planet_marks) * timestep;
-		k3 = Function(U + 0.5 * k2, timestep / 2., sat, atmo, atm_vel, planet_marks) * timestep;
-		k4 = Function(U + k3, timestep, sat, atmo, atm_vel, planet_marks) * timestep;
+		k1 = Function(U, 0., sat, atmo, atm_vel, planet_marks, objPlanets) * timestep;
+		k2 = Function(U + 0.5 * k1, timestep / 2., sat, atmo, atm_vel, planet_marks, objPlanets) * timestep;
+		k3 = Function(U + 0.5 * k2, timestep / 2., sat, atmo, atm_vel, planet_marks, objPlanets) * timestep;
+		k4 = Function(U + k3, timestep, sat, atmo, atm_vel, planet_marks, objPlanets) * timestep;
 
 		U = U + 1. / 6. * (k1 + 2 * k2 + 2 * k3 + k4);
 		coordinates = U.first;
@@ -141,10 +141,10 @@ int main()
 			day_time += delta_t;
 			if (day_time >= 86'400) {
 				day_time = 0;
-				day++;
+				atmo.day++;
 			}
-			if (day > 365) {
-				day = 1;
+			if (atmo.day > 365) {
+				atmo.day = 1;
 			}
 			hours = (time - day_count * 86'400) / 3'600;
 
@@ -170,7 +170,7 @@ int main()
 			orb_period = 2 * PI * sqrt(Keplers[1] * Keplers[1] * Keplers[1] / GE) / 60.;
 
 			std::cout << setfill(' ') << fixed << setprecision(0);
-			std::cout << "day: " << setw(3) << day_count << " hours: " << setw(2) << hours << " year day: " << day << std::endl;
+			std::cout << "day: " << setw(3) << day_count << " hours: " << setw(2) << hours << " year day: " << atmo.day << std::endl;
 			std::cout << setprecision(2) << "L: " << setw(7) << L << " B: " << setw(7) << B << " H : " << setw(7) << H;
 			std::cout << setprecision(4) << " i = " << Keplers[0] << scientific << " acceleration = " << setw(7) << a.GetX() << " " 
 				<< setw(7) << a.GetY() << " dens = " << atmo.ro

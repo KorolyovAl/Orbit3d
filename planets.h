@@ -12,6 +12,8 @@ private:
 	std::vector<planet_data> Moon;
 	std::vector<planet_data> Sun;
 	const size_t MAX_ELEMENTS;
+	double first_julian_day_Moon = 0.;
+	double first_julian_day_Sun = 0.;
 
 public:
 	Planets_class(planets pl) : planet_marks(pl), MAX_ELEMENTS(270'000) {}
@@ -57,14 +59,25 @@ public:
 	void Fill_Moon(const std::string str) {
 		Moon.reserve(MAX_ELEMENTS);
 		Fill_container(str, Moon);
+		first_julian_day_Moon = Moon[0].date;
 	}
 
 	void Fill_Sun(const std::string str) {
 		Sun.reserve(MAX_ELEMENTS);
 		Fill_container(str, Sun);
+		first_julian_day_Moon = Sun[0].date;
 	}
 
-	void Get_position() {
+	My_vector Get_position(const double current_date) {
 
+
+	}
+
+	const std::vector<planet_data>& Get_vector_Moon() const {
+		return Moon;
+	}
+
+	const std::vector<planet_data>& Get_vector_Sun() const {
+		return Sun;
 	}
 };

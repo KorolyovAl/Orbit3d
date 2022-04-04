@@ -134,13 +134,37 @@ My_vector Get_thrust_a(const My_vector& coord, const My_vector& velocity, const 
 	return {};
 }
 
-	My_vector Get_planets_a(double current_date, std::vector<planet_data>& v, const My_vector& coord) {
-		
-		return {};
+	double Get_julian_date(int year, int month, int day, int hour, int minute) {
+		double a = (14 - month) / 12;
+		double y = (double)year + 4'800 - a;
+		double m = month + 12 * a - 3;
+		double jdn = day + (153 * m + 2) / 5 + 365 * y + y / 4 - y / 100 + y / 400 - 32'045;
+		double jd = jdn + (hour - 12) / 24 + minute / 1'440;
+		return jd;
+	}
+
+	My_vector Get_planets_a(double current_date, const std::vector<planet_data>& v, const My_vector& coord) {
+		My_vector acc;
+
+		// current date is the number of days from the start flight date
+		// default initial date = 01.01.2000
+		//double j_date = Get_julian_date(2000, 1, 1, 0, 0) + current_date;
+		double j_date = 2473348.75;
+		double first_j_date = v[0].date;
+		int vector_position = (j_date - first_j_date) * 4;
+
+		double delta_days = j_date - v[vector_position].date;
+		vector_position += (delta_days * 4);
+
+		My_vector planet_coord(v[vector_position].X, v[vector_position].Y, v[vector_position].Z);
+		My_vector tmp = planet_coord - coord;
+
+
+		return acc;
 	}
 
 std::pair<My_vector, My_vector> Function(const std::pair<My_vector, My_vector>& state, double dt, const satellite& sat, const atmosphere& atmo, 
-	const My_vector& atm_vel, const planets& planets_struct) {
+	const My_vector& atm_vel, const planets& planets_struct, const Planets_class& planets_data) {
 	My_vector coord = state.first;
 	My_vector velocity = state.second; // orbital velocity
 	My_vector atmo_velocity = velocity - atm_vel;
@@ -155,10 +179,10 @@ std::pair<My_vector, My_vector> Function(const std::pair<My_vector, My_vector>& 
 	if (planets_struct.general_mark == true) { // plus planets influence
 		My_vector local_a = { 0., 0., 0. };
 		if (planets_struct.Moon.first == true) {
-
+			local_a = local_a + Get_planets_a(atmo.day, planets_data.Get_vector_Moon(), coord);
 		}
 		if (planets_struct.Sun.first == true) {
-
+			local_a = local_a + Get_planets_a(atmo.day, planets_data.Get_vector_Sun(), coord);
 		}
 		a = a + local_a;
 	}

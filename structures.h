@@ -76,7 +76,7 @@ struct satellite {
 
 struct atmosphere {
 	double f107;   // F10.7 solar activity index
-	double day;    // day number sins 1,jan
+	int day;    // day number sins 1,jan
 	double d; // number density [1/m^3]
 	double ro;  // density [kg/m^3]
 	double tk;  // temperture [K]
@@ -85,6 +85,19 @@ struct atmosphere {
 	double gamma; // cp/cv ratio
 	double sv; // sound velosity [m/c]
 	double lambda; // mean free path [m]
+
+	atmosphere() {
+		f107 = 0.;
+		day = 0.;
+		d = 0.;
+		ro = 0.;
+		tk = 0.;
+		pres = 0.;
+		mass = 0.;
+		gamma = 0.;
+		sv = 0.;
+		lambda = 0.;
+	}
 };
 
 struct planets {
@@ -99,4 +112,10 @@ struct planet_data {
 	double Y;
 	double Z;
 	double R;
+};
+
+struct date_struct {
+	int day;
+	int month;
+	int year;
 };
