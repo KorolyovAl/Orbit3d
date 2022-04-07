@@ -19,3 +19,6 @@ const double GE = 3.986004391e14; // geocentr gravitational constant, m^3 * s^(-
 const double Angular_speed_Earth = 7.2921158553e-5; // second^-1
 const double Period = 86164.090530833; // seconds
 //---------------------------------
+
+const double Moon_mass = 7.3477e22; // kg
+const double Sun_mass = 1.9885e30; // kg

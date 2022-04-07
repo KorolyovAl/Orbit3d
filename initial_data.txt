@@ -1,8 +1,8 @@
 Parameters of orbit:
 inclination		0
 orbit eccentricity	0
-apoapsis		35800
-periapsis		35800
+apoapsis		500
+periapsis		500
 argument of periapsis	90
 true anomaly		-90
 ascending long		0
@@ -13,4 +13,7 @@ Parameters of satellite:
 mass			1
 area			1
 size			0.1
-Cx			3.54
+Cx			2.1
+
+!Cx_sphere			3.54
+!Cx_cubesat			2.1

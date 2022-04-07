@@ -143,7 +143,7 @@ My_vector Get_thrust_a(const My_vector& coord, const My_vector& velocity, const 
 		return jd;
 	}
 
-	My_vector Get_planets_a(double current_date, const std::vector<planet_data>& v, const My_vector& coord) {
+	My_vector Get_planets_a(double current_date, const std::vector<planet_data>& v, const My_vector& coord, const double& planet_mass, const satellite& sat) {
 		My_vector acc;
 
 		// current date is the number of days from the start flight date
@@ -157,14 +157,18 @@ My_vector Get_thrust_a(const My_vector& coord, const My_vector& velocity, const 
 		vector_position += (delta_days * 4);
 
 		My_vector planet_coord(v[vector_position].X, v[vector_position].Y, v[vector_position].Z);
-		My_vector tmp = planet_coord - coord;
+		My_vector r_vector = (planet_coord * 1'000) - coord;
 
+		double force_value = gravitational_const * (planet_mass * sat.mass) / (r_vector.Length() * r_vector.Length());
+		My_vector force_vector = force_value * r_vector.Normalize();
+
+		acc = force_vector / sat.mass;
 
 		return acc;
 	}
 
 std::pair<My_vector, My_vector> Function(const std::pair<My_vector, My_vector>& state, double dt, const satellite& sat, const atmosphere& atmo, 
-	const My_vector& atm_vel, const planets& planets_struct, const Planets_class& planets_data) {
+	const My_vector& atm_vel, const planets& planets_struct, const Planets_class& planets_data, My_vector& acceleration) {
 	My_vector coord = state.first;
 	My_vector velocity = state.second; // orbital velocity
 	My_vector atmo_velocity = velocity - atm_vel;
@@ -179,15 +183,16 @@ std::pair<My_vector, My_vector> Function(const std::pair<My_vector, My_vector>& 
 	if (planets_struct.general_mark == true) { // plus planets influence
 		My_vector local_a = { 0., 0., 0. };
 		if (planets_struct.Moon.first == true) {
-			local_a = local_a + Get_planets_a(atmo.day, planets_data.Get_vector_Moon(), coord);
+			local_a = local_a + Get_planets_a(atmo.day, planets_data.Get_vector_Moon(), coord, Moon_mass, sat);
 		}
 		if (planets_struct.Sun.first == true) {
-			local_a = local_a + Get_planets_a(atmo.day, planets_data.Get_vector_Sun(), coord);
+			local_a = local_a + Get_planets_a(atmo.day, planets_data.Get_vector_Sun(), coord, Sun_mass, sat);
 		}
 		a = a + local_a;
 	}
 
 	My_vector new_coord = velocity;
+	acceleration = a;
 	My_vector new_velocity = g + a;
 
 	return { new_coord, new_velocity };

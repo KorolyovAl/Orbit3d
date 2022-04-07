@@ -21,8 +21,8 @@ int main()
 	satellite sat;
 	atmosphere atmo;
 	planets planet_marks{
-		{true},							// general mark
-		{true, "Moon_geocenter.txt"},	// Moon
+		{true},								// general mark
+		{false, "Moon_geocenter.txt"},		// Moon
 		{true, "Sun_Earth.txt"}			// Sun
 	};
 	Planets_class objPlanets(planet_marks);
@@ -33,7 +33,7 @@ int main()
 		if (planet_marks.Moon.first == true) {
 			objPlanets.Fill_Moon(planet_marks.Moon.second);
 		}
-		if (planet_marks.Sun.first == false) {
+		if (planet_marks.Sun.first == true) {
 			objPlanets.Fill_Sun(planet_marks.Sun.second);
 		}
 	}
@@ -63,7 +63,7 @@ int main()
 	coordinates = U.first;
 	velocity = U.second;
 	pair<My_vector, My_vector> k1, k2, k3, k4;
-	ofstream output("results/test_with_optimization.txt");
+	ofstream output("results/Earth_Sun.txt");
 	//ofstream output ("incl_65_1-1-1-0-400.txt");
 
 	__int64 day_count = 0; // count of days
@@ -119,19 +119,20 @@ int main()
 		sat.Cx = Get_Cx(atmo, U);
 
 		atm_vel = Calculate_vector_velocity_rotation(coordinates);
+		
+		My_vector a;	
 
-		k1 = Function(U, 0., sat, atmo, atm_vel, planet_marks, objPlanets) * timestep;
-		k2 = Function(U + 0.5 * k1, timestep / 2., sat, atmo, atm_vel, planet_marks, objPlanets) * timestep;
-		k3 = Function(U + 0.5 * k2, timestep / 2., sat, atmo, atm_vel, planet_marks, objPlanets) * timestep;
-		k4 = Function(U + k3, timestep, sat, atmo, atm_vel, planet_marks, objPlanets) * timestep;
+		k1 = Function(U, 0., sat, atmo, atm_vel, planet_marks, objPlanets, a) * timestep;
+		k2 = Function(U + 0.5 * k1, timestep / 2., sat, atmo, atm_vel, planet_marks, objPlanets, a) * timestep;
+		k3 = Function(U + 0.5 * k2, timestep / 2., sat, atmo, atm_vel, planet_marks, objPlanets, a) * timestep;
+		k4 = Function(U + k3, timestep, sat, atmo, atm_vel, planet_marks, objPlanets, a) * timestep;
 
 		U = U + 1. / 6. * (k1 + 2 * k2 + 2 * k3 + k4);
 		coordinates = U.first;
 		velocity = U.second;
 
 		sat.thrust_on = false;
-
-		My_vector a = Get_a(velocity, sat, atmo);
+		
 		vector<double> Elipt = Calculate_elliptic_coordinates(coordinates);
 		L = Elipt[0]; B = Elipt[1]; H = Elipt[2] / 1000.;
 
@@ -182,7 +183,7 @@ int main()
 				//		<< " N: " << turns << " inclination: " << Keplers[0] << " dens = " << atmo.ro << " temperature = " << atmo.tk
 				<< setprecision(1) << " velocity: " << setw(7) << velocity.GetX() << " " << setw(7) << velocity.GetY()
 				//		<< setprecision(1) << " position: x = " << setw(7) << U.first.x << " y =  " << setw(7) << U.first.y << " z = " << setw(7) << U.first.z
-				<< setprecision(2) << " acceleration: " << scientific << setw(7) << a.GetX() << " " << setw(7) << a.GetX()
+				<< setprecision(2) << " acceleration: " << scientific << setw(7) << a.GetX() << " " << setw(7) << a.GetY() << " " << setw(7) << a.GetZ()
 				<< fixed << setprecision(2) << " period: " << setw(4) << orb_period
 				<< setprecision(4) << " inclination: " << setw(4) << Keplers[0]
 				<< setprecision(2) << " Cx: " << setw(4) << sat.Cx
