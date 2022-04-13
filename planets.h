@@ -29,7 +29,7 @@ public:
 				file >> buffer;
 				file >> buffer;
 
-				planet_data tmp{0.,0.,0.,0.};
+				planet_data tmp{0.,0.,0.,0., 0., 0., 0.};
 				file >> tmp.date;
 
 				file >> buffer;
@@ -47,6 +47,18 @@ public:
 				file >> buffer;
 				file >> buffer;
 				file >> tmp.R;
+
+				file >> buffer;
+				file >> buffer;
+				file >> tmp.VX;
+
+				file >> buffer;
+				file >> buffer;
+				file >> tmp.VY;
+
+				file >> buffer;
+				file >> buffer;
+				file >> tmp.VZ;
 
 				v.push_back(move(tmp));				
 			}

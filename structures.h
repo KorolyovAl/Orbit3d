@@ -112,6 +112,9 @@ struct planet_data {
 	double Y;
 	double Z;
 	double R;
+	double VX;
+	double VY;
+	double VZ;
 };
 
 struct date_struct {

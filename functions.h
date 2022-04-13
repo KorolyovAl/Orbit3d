@@ -143,7 +143,8 @@ My_vector Get_thrust_a(const My_vector& coord, const My_vector& velocity, const 
 		return jd;
 	}
 
-	My_vector Get_planets_a(double current_date, const std::vector<planet_data>& v, const My_vector& coord, const double& planet_mass, const satellite& sat) {
+	My_vector Get_planets_a(double current_date, const std::vector<planet_data>& v, const My_vector& coord, const double planet_mass, 
+							const satellite& sat, const double center_mass) {
 		My_vector acc;
 
 		// current date is the number of days from the start flight date
@@ -164,7 +165,14 @@ My_vector Get_thrust_a(const My_vector& coord, const My_vector& velocity, const 
 
 		acc = force_vector / sat.mass;
 
-		return acc;
+		My_vector planet_velocity(v[vector_position].VX * 1'000, v[vector_position].VY * 1'000, v[vector_position].VZ * 1'000);
+		double velocity_force_value = (planet_velocity.Length() * planet_velocity.Length()) / (v[vector_position].R * 1'000) * center_mass;
+		My_vector tmp = (planet_coord * 1'000);
+		My_vector velocity_force_vector = velocity_force_value * tmp.Normalize();
+
+		My_vector velocity_acc = velocity_force_vector / center_mass;
+
+		return (acc - velocity_acc);
 	}
 
 std::pair<My_vector, My_vector> Function(const std::pair<My_vector, My_vector>& state, double dt, const satellite& sat, const atmosphere& atmo, 
@@ -183,10 +191,10 @@ std::pair<My_vector, My_vector> Function(const std::pair<My_vector, My_vector>& 
 	if (planets_struct.general_mark == true) { // plus planets influence
 		My_vector local_a = { 0., 0., 0. };
 		if (planets_struct.Moon.first == true) {
-			local_a = local_a + Get_planets_a(atmo.day, planets_data.Get_vector_Moon(), coord, Moon_mass, sat);
+			local_a = local_a + Get_planets_a(atmo.day, planets_data.Get_vector_Moon(), coord, Moon_mass, sat, Moon_mass);
 		}
 		if (planets_struct.Sun.first == true) {
-			local_a = local_a + Get_planets_a(atmo.day, planets_data.Get_vector_Sun(), coord, Sun_mass, sat);
+			local_a = local_a + Get_planets_a(atmo.day, planets_data.Get_vector_Sun(), coord, Sun_mass, sat, Earth_mass);
 		}
 		a = a + local_a;
 	}
