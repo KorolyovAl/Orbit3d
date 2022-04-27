@@ -146,6 +146,41 @@ My_vector Get_thrust_a(const My_vector& coord, const My_vector& velocity, const 
 	My_vector Get_planets_a(double current_date, const std::vector<planet_data>& v, const My_vector& coord, const double planet_mass, 
 							const satellite& sat, const double center_mass) {
 		My_vector acc;
+		My_vector acc_planet;
+
+		// current date is the number of days from the start flight date
+		// default initial date = 01.01.2000
+		//double j_date = Get_julian_date(2000, 1, 1, 0, 0) + current_date;
+		double j_date = 2473348.75;
+		double first_j_date = v[0].date;
+		int vector_position = (j_date - first_j_date) * 4;
+
+		double delta_days = j_date - v[vector_position].date;
+		vector_position += (delta_days * 4);
+
+		My_vector planet_coord(v[vector_position].X * 1'000, v[vector_position].Y * 1'000, v[vector_position].Z * 1'000);
+		My_vector r_vector = (planet_coord) - coord;
+
+		My_vector planet_velocity(v[vector_position].VX * 1'000, v[vector_position].VY * 1'000, v[vector_position].VZ * 1'000);
+
+		double force_2 = Earth_mass * (planet_velocity.Length() * planet_velocity.Length()) / (planet_coord.Length());
+		double force_for_planet = gravitational_const * (planet_mass * Earth_mass) / (planet_coord.Length() * planet_coord.Length());
+		double force_value = gravitational_const * (planet_mass * sat.mass) / (r_vector.Length() * r_vector.Length());
+
+		My_vector force_vector = force_value * r_vector.Normalize();
+		My_vector force_vector_p = force_for_planet * planet_coord.Normalize();
+
+		acc = force_vector / sat.mass;
+		acc_planet = force_vector_p / Earth_mass;
+
+		//My_vector acc_test = acc - acc_planet;
+
+		return { acc - acc_planet };
+	}
+
+	My_vector Get_planets_a_2(double current_date, const std::vector<planet_data>& v, const My_vector& coord, const double planet_mass,
+		const satellite& sat, const double center_mass) {
+		My_vector acc;
 
 		// current date is the number of days from the start flight date
 		// default initial date = 01.01.2000

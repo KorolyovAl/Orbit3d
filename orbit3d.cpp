@@ -22,7 +22,7 @@ int main()
 	atmosphere atmo;
 	planets planet_marks{
 		{true},								// general mark
-		{false, "Moon_geocenter.txt"},		// Moon
+		{true, "Moon_geocenter.txt"},		// Moon
 		{true, "Sun_Earth.txt"}			// Sun
 	};
 	Planets_class objPlanets(planet_marks);
@@ -63,7 +63,7 @@ int main()
 	coordinates = U.first;
 	velocity = U.second;
 	pair<My_vector, My_vector> k1, k2, k3, k4;
-	ofstream output("results/Earth_Sun.txt");
+	ofstream output("results/Earth_Sun_Moon.txt");
 	//ofstream output ("incl_65_1-1-1-0-400.txt");
 
 	__int64 day_count = 0; // count of days
