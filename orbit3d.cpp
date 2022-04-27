@@ -21,7 +21,7 @@ int main()
 	satellite sat;
 	atmosphere atmo;
 	planets planet_marks{
-		{true},								// general mark
+		{true},					// general mark
 		{true, "Moon_geocenter.txt"},		// Moon
 		{true, "Sun_Earth.txt"}			// Sun
 	};
